@@ -156,13 +156,23 @@ function App() {
 
     }
 
+    const makeID = (length) => {
+        let result           = '';
+        let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let charactersLength = characters.length;
+        for ( let i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     const downloadFile = () => {
         notifications.showNotification({
             title: "🎉 Successful!",
             message: "Your file is being saved.",
             color: "green"
         })
-        download(editorValue, "file.txt", "text/plain")
+        download(JSON.stringify({code: editorValue, language, languageVersion}), makeID(5)+".rnany", "text/plain")
 
     }
 
@@ -177,8 +187,10 @@ function App() {
                 throw 'Could not parse result'; // should not happen
             }
             let content = match[2];
-            console.log(content)
-            setEditorValue(atob(content))
+            let fileData = JSON.parse(atob(content));
+            setEditorValue(fileData.code);
+            setLanguage(fileData.language);
+            setLanguageVersion(fileData.languageVersion);
             notifications.showNotification({
                 title: "🎉 Successful!",
                 message: "Your file was loaded.",
